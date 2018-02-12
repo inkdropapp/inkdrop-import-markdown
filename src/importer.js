@@ -1,19 +1,18 @@
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
 import { remote } from 'electron'
-import { html2markdown } from 'inkdrop'
-const { jsdom } = require.main.require('jsdom')
+import Cutter from 'utf8-binary-cutter'
 const { dialog } = remote
 const { Note } = inkdrop.models
 
 export function openImportDialog () {
   return dialog.showOpenDialog({
-    title: 'Open HTML file',
+    title: 'Open Markdown file',
     properties: [
       'openFile', 'multiSelections'
     ],
     filters: [
-      { name: 'HTML Files', extensions: [ 'html' ] }
+      { name: 'Markdown Files', extensions: [ 'md', 'txt' ] }
     ]
   })
 }
@@ -21,63 +20,50 @@ export function openImportDialog () {
 export async function importMarkdownFromMultipleFiles (files, destBookId) {
   try {
     for (let i = 0; i < files.length; ++i) {
-      await importHTMLFromFile(files[i], destBookId)
+      await importMarkdownFromFile(files[i], destBookId)
     }
   } catch (e) {
-    inkdrop.notifications.addError('Failed to import the HTML file', { detail: e.stack, dismissable: true })
+    inkdrop.notifications.addError('Failed to import the Markdown file', { detail: e.stack, dismissable: true })
   }
 }
 
-function parseMetaTag (dom, metaName) {
-  if (!dom) {
-    throw new Error('Invalid DOM')
-  }
-  const meta = dom.querySelector(`meta[name=${metaName}]`)
-  if (meta) {
-    const content = meta.attributes['content']
-    if (content) {
-      return content.value
-    }
-  }
-  return false
+/*
+ wri.pe: https://wri.pe/
+ If the file was exported from 'wri.pe',
+ the first line should be truncated from its body
+ and be treated as a title.
+ */
+function isWripeFormat (fn) {
+  return /page-\d+\.txt/.test(path.basename(fn))
 }
 
-function getMetaFromHTML (html) {
-  const dom = jsdom(html)
+function getTitleAndBodyFromMarkdown (fn, markDown) {
+  const [firstLine, ...restLines] = markDown.split('\n')
+  const title = Cutter.truncateToBinarySize(firstLine.replace(/^#+\s*/, ''), 128)
+  if (isWripeFormat(fn)) {
+    return {title: title, body: restLines.join('\n')}
+  } else {
+    return {title: title, body: markDown}
+  }
+}
+
+function getMetaFromMarkdown (body) {
   const meta = {
     tags: [],
-    createdAt: +new Date(),
-    updatedAt: +new Date()
-  }
-  const keywords = parseMetaTag(dom, 'keywords')
-  if (keywords) {
-    meta.tags = keywords.split(',').map((tag) => tag.trim())
-  }
-  const created = parseMetaTag(dom, 'created')
-  if (created) {
-    meta.createdAt = +new Date(created)
-  }
-  const updated = parseMetaTag(dom, 'updated')
-  if (updated) {
-    meta.updatedAt = +new Date(updated)
-  }
-  const titleTag = dom.querySelector('title')
-  if (titleTag) {
-    meta.title = titleTag.text
+    createdAt: Date.now(),
+    updatedAt: Date.now()
   }
   return meta
 }
 
-export async function importHTMLFromFile (fn, destBookId) {
+export async function importMarkdownFromFile (fn, destBookId) {
   if (!destBookId) {
     throw new Error('Destination notebook ID is not specified.')
   }
-  const html = fs.readFileSync(fn, 'utf-8')
-  const titleFromFileName = path.basename(fn, path.extname(fn))
-  const body = html2markdown(html)
-  const { tags, createdAt, updatedAt, title } = getMetaFromHTML(html)
-
-  const note = new Note({ title: title || titleFromFileName, body, tags, createdAt, updatedAt })
+  const markDown = fs.readFileSync(fn, 'utf-8')
+  const {title, body} = getTitleAndBodyFromMarkdown(fn, markDown)
+  const {tags, createdAt, updatedAt} = getMetaFromMarkdown(body)
+  const note = new Note({title: title, body, tags, createdAt, updatedAt})
   note.bookId = destBookId
   await note.save()
 }
