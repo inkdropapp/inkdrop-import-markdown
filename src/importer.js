@@ -18,7 +18,7 @@ export function openImportDialog () {
   })
 }
 
-export async function importHTMLFromMultipleFiles (files, destBookId) {
+export async function importMarkdownFromMultipleFiles (files, destBookId) {
   try {
     for (let i = 0; i < files.length; ++i) {
       await importHTMLFromFile(files[i], destBookId)

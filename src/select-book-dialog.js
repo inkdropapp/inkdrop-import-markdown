@@ -1,6 +1,6 @@
 import { React, CompositeDisposable } from 'inkdrop'
 
-export default class SelectBookDialog extends React.Component {
+export default class ImportMarkdownSelectBookDialog extends React.Component {
   constructor (props) {
     super(props)
 
@@ -9,7 +9,7 @@ export default class SelectBookDialog extends React.Component {
 
     // Register command that toggles this view
     this.subscription = inkdrop.commands.add(document.body, {
-      'import-html:import-from-file': () => this.handleImportHTMLFileCommand()
+      'import-markdown:import-from-file': () => this.handleImportMarkdownFileCommand()
     })
 
     this.state = {
@@ -45,7 +45,7 @@ export default class SelectBookDialog extends React.Component {
     return (
       <MessageDialog
         ref={el => this.dialog = el}
-        title='Import Notes from HTML'
+        title='Import Notes from Markdown'
         buttons={buttons}
         onDismiss={::this.handleDismissDialog}
       >
@@ -71,7 +71,7 @@ export default class SelectBookDialog extends React.Component {
 
   handleDismissDialog (dialog, buttonIndex) {
     if (buttonIndex === 1) {
-      const { openImportDialog, importHTMLFromMultipleFiles } = require('./importer')
+      const { openImportDialog, importMarkdownFromMultipleFiles } = require('./importer')
       const { destBookId } = this.state
       if (!destBookId) {
         this.setState({ formErrorMessageVisible: true })
@@ -80,14 +80,14 @@ export default class SelectBookDialog extends React.Component {
 
       const files = openImportDialog()
       if (files) {
-        importHTMLFromMultipleFiles(files, destBookId)
+        importMarkdownFromMultipleFiles(files, destBookId)
       } else {
         return false
       }
     }
   }
 
-  handleImportHTMLFileCommand () {
+  handleImportMarkdownFileCommand () {
     const { dialog } = this
     if (!dialog.isShown) {
       this.setState({

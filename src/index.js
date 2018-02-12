@@ -1,13 +1,13 @@
-import SelectBookDialog from './select-book-dialog'
+import ImportMarkdownSelectBookDialog from './select-book-dialog'
 
 module.exports = {
   activate () {
-    inkdrop.components.registerClass(SelectBookDialog)
-    inkdrop.layouts.addComponentToLayout('modals', 'SelectBookDialog')
+    inkdrop.components.registerClass(ImportMarkdownSelectBookDialog)
+    inkdrop.layouts.addComponentToLayout('modals', 'ImportMarkdownSelectBookDialog')
   },
 
   deactivate () {
-    inkdrop.layouts.removeComponentFromLayout('modals', 'SelectBookDialog')
-    inkdrop.components.deleteClass(SelectBookDialog)
+    inkdrop.layouts.removeComponentFromLayout('modals', 'ImportMarkdownSelectBookDialog')
+    inkdrop.components.deleteClass(ImportMarkdownSelectBookDialog)
   }
 }

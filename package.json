@@ -1,14 +1,14 @@
 {
-  "name": "import-html",
+  "name": "import-markdown",
   "main": "./lib/index",
-  "version": "1.0.2",
-  "description": "A plugin for importing notes from HTML files",
+  "version": "0.1.0",
+  "description": "A plugin for importing notes from Markdown files",
   "keywords": [],
   "scripts": {
     "build": "babel src/ -d lib/",
     "dev": "babel --watch src/ -d lib/"
   },
-  "repository": "https://github.com/inkdropapp/inkdrop-import-html",
+  "repository": "https://github.com/q1701/inkdrop-import-markdown",
   "license": "MIT",
   "engines": {
     "inkdrop": ">=3.17.2 <4.0.0"
