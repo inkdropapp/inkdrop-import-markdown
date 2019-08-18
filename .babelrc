@@ -1,13 +1,14 @@
 {
   "presets": [
-    ["env", {
-      "targets": {
-        "browsers": "chrome >= 56.0.2924.87"
-      }
+    ["@babel/preset-env", {
+      "targets": { "electron": "3.0.14" },
+      "useBuiltIns": "usage",
+      "debug": false,
+      "corejs": 3
     }],
-    "react"
+    "@babel/preset-react"
   ],
   "plugins": [
-    "transform-function-bind"
+    "@babel/plugin-proposal-class-properties"
   ]
 }

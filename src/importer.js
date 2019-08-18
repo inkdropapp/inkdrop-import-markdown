@@ -1,11 +1,12 @@
 import fs from 'fs'
 import path from 'path'
 import { remote } from 'electron'
+import { models } from 'inkdrop'
 import Cutter from 'utf8-binary-cutter'
 const { dialog } = remote
-const { Note } = inkdrop.models
+const { Note } = models
 
-export function openImportDialog () {
+export function openImportDialog() {
   return dialog.showOpenDialog({
     title: 'Open Markdown file',
     properties: [

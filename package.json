@@ -11,19 +11,24 @@
   "repository": "https://github.com/q1701/inkdrop-import-markdown",
   "license": "MIT",
   "engines": {
-    "inkdrop": ">=3.17.2 <4.0.0"
+    "inkdrop": "^4.x"
   },
   "dependencies": {
+    "core-js": "^3.2.1",
     "utf8-binary-cutter": "^0.9.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
     "@types/react": "^16.0.36",
-    "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.2.1",
-    "babel-plugin-transform-function-bind": "^6.22.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-react": "^6.24.1",
-    "eslint": "^4.17.0",
-    "standard": "^10.0.3"
+    "babel-eslint": "^10.0.2",
+    "eslint": "^6.1.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^7.14.3",
+    "prettier": "^1.18.2"
   }
 }
