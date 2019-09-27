@@ -1,13 +1,19 @@
 import ImportMarkdownSelectNotebookDialog from './select-book-dialog'
 
 module.exports = {
-  activate () {
+  activate() {
     inkdrop.components.registerClass(ImportMarkdownSelectNotebookDialog)
-    inkdrop.layouts.addComponentToLayout('modal', 'ImportMarkdownSelectNotebookDialog')
+    inkdrop.layouts.addComponentToLayout(
+      'modal',
+      'ImportMarkdownSelectNotebookDialog'
+    )
   },
 
-  deactivate () {
-    inkdrop.layouts.removeComponentFromLayout('modal', 'ImportMarkdownSelectNotebookDialog')
+  deactivate() {
+    inkdrop.layouts.removeComponentFromLayout(
+      'modal',
+      'ImportMarkdownSelectNotebookDialog'
+    )
     inkdrop.components.deleteClass(ImportMarkdownSelectNotebookDialog)
   }
 }
