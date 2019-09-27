@@ -48,10 +48,10 @@ export default class ImportMarkdownSelectNotebookDialog extends React.Component 
       openImportDialog,
       importMarkdownFromMultipleFiles
     } = require('./importer')
-    const files = openImportDialog()
-    if (files) {
+    const { filePaths } = await openImportDialog()
+    if (filePaths) {
       dialog.dismissDialog(-1)
-      await importMarkdownFromMultipleFiles(files, destBookId)
+      await importMarkdownFromMultipleFiles(filePaths, destBookId)
     } else {
       return false
     }
