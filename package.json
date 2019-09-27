@@ -8,7 +8,7 @@
     "build": "babel src/ -d lib/",
     "dev": "babel --watch src/ -d lib/"
   },
-  "repository": "https://github.com/q1701/inkdrop-import-markdown",
+  "repository": "https://github.com/inkdropapp/inkdrop-import-markdown",
   "license": "MIT",
   "engines": {
     "inkdrop": "^4.x"
