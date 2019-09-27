@@ -7,7 +7,7 @@ extends:
 parser: babel-eslint
 settings:
   react:
-    version: '0.16'
+    version: '16.8'
 env:
   browser: true
   es6: true
