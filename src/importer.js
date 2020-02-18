@@ -10,7 +10,10 @@ export function openImportDialog() {
   return dialog.showOpenDialog({
     title: 'Open Markdown file',
     properties: ['openFile', 'multiSelections'],
-    filters: [{ name: 'Markdown Files', extensions: ['md', 'txt'] }]
+    filters: [
+      { name: 'Markdown Files', extensions: ['md', 'txt'] },
+      { name: 'All Files', extensions: ['*'] }
+    ]
   })
 }
 
