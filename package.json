@@ -11,7 +11,7 @@
   "repository": "https://github.com/inkdropapp/inkdrop-import-markdown",
   "license": "MIT",
   "engines": {
-    "inkdrop": "^4.x"
+    "inkdrop": "^5.x"
   },
   "dependencies": {
     "utf8-binary-cutter": "^0.9.1"
