@@ -4,25 +4,21 @@
   "version": "0.3.1",
   "description": "A plugin for importing notes from Markdown files",
   "keywords": [],
-  "scripts": {
-    "build": "babel src/ -d lib/",
-    "dev": "babel --watch src/ -d lib/"
-  },
+  "scripts": {},
   "repository": "https://github.com/inkdropapp/inkdrop-import-markdown",
   "license": "MIT",
   "engines": {
     "inkdrop": "^5.x"
   },
   "dependencies": {
-    "js-yaml": "^3.14.0",
-    "utf8-binary-cutter": "^0.9.1"
+    "inkdrop-import-utils": "^1.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.11.0",
-    "eslint-config-prettier": "^6.12.0",
+    "eslint": "^7.13.0",
+    "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.21.4",
+    "eslint-plugin-react": "^7.21.5",
     "prettier": "^2.1.2"
   }
 }
