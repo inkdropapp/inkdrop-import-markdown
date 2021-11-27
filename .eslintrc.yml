@@ -2,7 +2,7 @@ root: true
 extends:
   - prettier
   - plugin:react/recommended
-parser: babel-eslint
+parser: "@babel/eslint-parser"
 settings:
   react:
     version: '16.8'

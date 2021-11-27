@@ -1,14 +1,9 @@
 {
   "presets": [
     ["@babel/preset-env", {
-      "targets": { "electron": "6.0.11" },
-      "useBuiltIns": "usage",
-      "debug": false,
-      "corejs": 3
+      "targets": { "electron": "12.2.1" }
     }],
     "@babel/preset-react"
   ],
-  "plugins": [
-    "@babel/plugin-proposal-class-properties"
-  ]
+  "plugins": []
 }
