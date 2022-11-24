@@ -2,7 +2,7 @@ root: true
 extends:
   - prettier
   - plugin:react/recommended
-parser: "@babel/eslint-parser"
+parser: '@babel/eslint-parser'
 settings:
   react:
     version: '16.8'
@@ -12,7 +12,7 @@ env:
   mocha: true
   node: true
 globals:
-  "$": true
+  '$': true
   inkdrop: true
   app: true
   _settings: true
@@ -32,7 +32,7 @@ rules:
   prefer-const: 2
   no-unused-vars:
     - 2
-    -
-      argsIgnorePattern: ^_
+    - argsIgnorePattern: ^_
       varsIgnorePattern: ^_
   react/display-name: 0
+  react/prop-types: 0
