@@ -13,7 +13,7 @@
     "inkdrop": "^5.x"
   },
   "dependencies": {
-    "glob": "^10.3.3"
+    "glob": "^11.0.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.3",
