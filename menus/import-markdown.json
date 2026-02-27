@@ -6,7 +6,10 @@
         {
           "label": "Import",
           "submenu": [
-            { "label": "from Markdown files..", "command": "import-markdown:import-from-file" }
+            {
+              "label": "from Markdown files..",
+              "command": "import-markdown:import-from-file"
+            }
           ]
         }
       ]
