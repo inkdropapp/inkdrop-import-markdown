@@ -13,12 +13,14 @@
     "inkdrop": "^6.x"
   },
   "dependencies": {
-    "glob": "^11.0.3"
+    "glob": "^13.0.6"
   },
   "devDependencies": {
-    "eslint": "^9.29.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-react": "^7.37.5",
-    "prettier": "^3.5.3"
+    "@eslint-react/eslint-plugin": "^4.2.3",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.5.0",
+    "prettier": "^3.8.2"
   }
 }

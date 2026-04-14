@@ -1,12 +1,13 @@
 import js from '@eslint/js'
-import react from 'eslint-plugin-react'
-import prettierConfig from 'eslint-config-prettier'
+import eslintReact from '@eslint-react/eslint-plugin'
+import prettierConfig from 'eslint-config-prettier/flat'
 import globals from 'globals'
 
 export default [
   js.configs.recommended,
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
+    ...eslintReact.configs.recommended,
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -22,10 +23,8 @@ export default [
         inkdrop: 'readonly'
       }
     },
-    plugins: {
-      react
-    },
     rules: {
+      ...eslintReact.configs.recommended.rules,
       'no-useless-escape': 0,
       'prefer-const': 2,
       'no-unused-vars': [
@@ -34,16 +33,7 @@ export default [
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_'
         }
-      ],
-      // React rules
-      ...react.configs.recommended.rules,
-      'react/display-name': 0,
-      'react/prop-types': 0
-    },
-    settings: {
-      react: {
-        version: '18'
-      }
+      ]
     }
   },
   prettierConfig
