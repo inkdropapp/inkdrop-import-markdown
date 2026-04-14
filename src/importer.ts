@@ -1,32 +1,21 @@
-const { logger } = require('inkdrop')
-const fs = require('fs')
-const {
-  promises: { readdir }
-} = require('fs')
+import { logger, models, importUtils } from 'inkdrop'
+import fs from 'fs'
+import { promises as fsp } from 'fs'
+import path from 'path'
+import { maxAttachmentFileSize } from 'inkdrop-model'
+import { glob } from 'glob'
 
-const path = require('path')
-const { models, importUtils } = require('inkdrop')
 const { Book } = models
-const { maxAttachmentFileSize } = require('inkdrop-model')
-const { glob } = require('glob')
-
-module.exports = {
-  openImportDialog,
-  checkSizeOfFiles,
-  importMarkdownFromMultipleFilesAndDirectories,
-  importMarkdownFromMultipleFiles,
-  importMarkdownFromFile
-}
 
 const isMacOS = process.platform === 'darwin'
 
-const getDirectories = async source =>
-  (await readdir(source, { withFileTypes: true }))
+const getDirectories = async (source: string) =>
+  (await fsp.readdir(source, { withFileTypes: true }))
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name)
 
-function openImportDialog({ isFolderOnly }) {
-  let properties = ['openDirectory', 'multiSelections']
+export function openImportDialog({ isFolderOnly }: { isFolderOnly: boolean }) {
+  let properties: string[] = ['openDirectory', 'multiSelections']
   if (!isFolderOnly) {
     if (isMacOS) properties.push('openFile')
     else properties = ['openFile', 'multiSelections']
@@ -43,8 +32,10 @@ function openImportDialog({ isFolderOnly }) {
   })
 }
 
-function checkSizeOfFiles(filePaths) {
-  const errors = []
+export function checkSizeOfFiles(
+  filePaths: string[]
+): [number, string[]] {
+  const errors: string[] = []
   let total = 0
   for (const fp of filePaths) {
     const stats = fs.statSync(fp)
@@ -62,10 +53,15 @@ function checkSizeOfFiles(filePaths) {
   return [total, errors]
 }
 
-async function importMarkdownFromMultipleFilesAndDirectories(
-  filePaths,
-  destBookId,
-  progressCallback,
+type ProgressCallback = (
+  filePath: string,
+  info: { isDirectory: boolean }
+) => void
+
+export async function importMarkdownFromMultipleFilesAndDirectories(
+  filePaths: string[],
+  destBookId: string | null,
+  progressCallback: ProgressCallback,
   { root = false }
 ) {
   logger.debug('Importing markdown files:', filePaths, { destBookId, root })
@@ -111,12 +107,15 @@ async function importMarkdownFromMultipleFilesAndDirectories(
   }
 }
 
-async function importMarkdownFromMultipleFiles(files, destBookId) {
+export async function importMarkdownFromMultipleFiles(
+  files: string[],
+  destBookId: string
+) {
   for (let i = 0; i < files.length; ++i) {
     await importMarkdownFromFile(files[i], destBookId)
   }
 }
 
-async function importMarkdownFromFile(fn, destBookId) {
+export async function importMarkdownFromFile(fn: string, destBookId: string) {
   return importUtils.importMarkdownFile(fn, destBookId)
 }

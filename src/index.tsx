@@ -1,18 +1,21 @@
-'use babel'
-
 import { useEffect, useCallback, useState } from 'react'
 import { useModal } from 'inkdrop'
-import SelectNotebookDialog from './select-book-dialog'
+import SelectNotebookDialog from './select-book-dialog.js'
 import path from 'path'
-import ProgressDialog from './progress-dialog'
+import ProgressDialog from './progress-dialog.js'
+import {
+  openImportDialog,
+  checkSizeOfFiles,
+  importMarkdownFromMultipleFilesAndDirectories
+} from './importer.js'
 
 export { activate, deactivate }
 
 const ImportMarkdownPlugin = () => {
   const [status, setStatus] = useState('')
-  const [tooLargeFiles, setTooLargeFiles] = useState([])
+  const [tooLargeFiles, setTooLargeFiles] = useState<string[]>([])
   const [processingFilePath, setProcessingFilePath] = useState('')
-  const [importError, setImportError] = useState(null)
+  const [importError, setImportError] = useState<Error | null>(null)
   const selectNotebookDialog = useModal()
   const progressDialog = useModal()
 
@@ -21,19 +24,14 @@ const ImportMarkdownPlugin = () => {
   }, [selectNotebookDialog])
 
   const handleNotebookSelected = useCallback(
-    async destBookId => {
-      const {
-        openImportDialog,
-        checkSizeOfFiles,
-        importMarkdownFromMultipleFilesAndDirectories
-      } = require('./importer')
+    async (destBookId: string | null) => {
       const { filePaths } = await openImportDialog({
         isFolderOnly: destBookId === null
       })
       if (filePaths instanceof Array && filePaths.length > 0) {
         setStatus('Scanning files..')
         progressDialog.show()
-        const [_totalSize, fileErrors] = checkSizeOfFiles(filePaths)
+        const [, fileErrors] = checkSizeOfFiles(filePaths)
         if (fileErrors.length > 0) {
           setTooLargeFiles(fileErrors)
         } else {
@@ -57,7 +55,7 @@ const ImportMarkdownPlugin = () => {
             })
             progressDialog.close()
           } catch (e) {
-            setImportError(e)
+            setImportError(e instanceof Error ? e : new Error(String(e)))
           }
         }
       }

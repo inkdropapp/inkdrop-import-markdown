@@ -1,26 +1,28 @@
 {
   "name": "import-markdown",
-  "main": "./lib/index",
+  "main": "./lib/index.js",
   "version": "0.4.0",
   "description": "A plugin for importing notes from Markdown files",
   "keywords": [],
   "scripts": {
-    "lint": "eslint lib"
+    "lint": "eslint .",
+    "build": "tsc",
+    "prepublishOnly": "npm run lint && npm run build"
   },
   "repository": "https://github.com/inkdropapp/inkdrop-import-markdown",
   "license": "MIT",
   "engines": {
     "inkdrop": "^6.x"
   },
-  "dependencies": {
-    "glob": "^13.0.6"
-  },
   "devDependencies": {
     "@eslint-react/eslint-plugin": "^4.2.3",
-    "@eslint/js": "^10.0.1",
+    "@inkdropapp/types": "^0.0.4",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
-    "globals": "^17.5.0",
-    "prettier": "^3.8.2"
+    "prettier": "^3.8.2",
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.58.2"
   }
 }

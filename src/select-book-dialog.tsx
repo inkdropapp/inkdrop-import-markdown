@@ -1,9 +1,11 @@
-'use babel'
+type Props = {
+  modal: { state: Record<string, any>; close: () => void }
+  onSelect: (bookId: string | null) => void
+}
 
-
-const ImportMarkdownSelectNotebookDialog = ({ modal, onSelect }) => {
-  const { NotebookListBar } = inkdrop.components.classes
-  const { Dialog } = inkdrop.components.classes
+const ImportMarkdownSelectNotebookDialog = ({ modal, onSelect }: Props) => {
+  const NotebookListBar = inkdrop.components.classes.NotebookListBar
+  const Dialog = inkdrop.components.classes.Dialog as any
 
   return (
     <Dialog

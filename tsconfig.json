@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "ignoreDeprecations": "6.0",
+    "lib": ["ESNext", "DOM"],
+    "declaration": false,
+    "strict": true,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-jsx",
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "inkdrop": [
+        "./node_modules/@inkdropapp/types/src/inkdrop-module/index.d.ts"
+      ]
+    },
+    "types": ["@inkdropapp/types", "node"]
+  },
+  "exclude": ["node_modules", "lib"]
+}
