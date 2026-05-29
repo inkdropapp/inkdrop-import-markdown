@@ -16,14 +16,16 @@
     "inkdrop": "^6.x"
   },
   "devDependencies": {
-    "@eslint-react/eslint-plugin": "^4.2.3",
-    "@inkdropapp/types": "^0.0.4",
-    "@types/node": "^25.6.0",
-    "@types/react": "^19.2.14",
-    "eslint": "^10.2.0",
+    "@eslint-react/eslint-plugin": "^5.8.6",
+    "@inkdropapp/types": "^0.0.8",
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.2.15",
+    "eslint": "^10.4.0",
     "eslint-config-prettier": "^10.1.8",
-    "prettier": "^3.8.2",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.2"
+    "glob": "^13.0.6",
+    "inkdrop-model": "^2.11.5",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.60.0"
   }
 }
