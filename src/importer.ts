@@ -32,9 +32,7 @@ export function openImportDialog({ isFolderOnly }: { isFolderOnly: boolean }) {
   })
 }
 
-export function checkSizeOfFiles(
-  filePaths: string[]
-): [number, string[]] {
+export function checkSizeOfFiles(filePaths: string[]): [number, string[]] {
   const errors: string[] = []
   let total = 0
   for (const fp of filePaths) {
