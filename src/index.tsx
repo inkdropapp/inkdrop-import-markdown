@@ -1,8 +1,10 @@
 import path from 'path'
 
+import type { Environment, IInkdropPlugin } from '@inkdropapp/types'
 import { useModal } from 'inkdrop'
 import { useEffect, useCallback, useState } from 'react'
 
+import { getEnv, setEnv } from './env.js'
 import {
   openImportDialog,
   checkSizeOfFiles,
@@ -10,8 +12,6 @@ import {
 } from './importer.js'
 import ProgressDialog from './progress-dialog.js'
 import SelectNotebookDialog from './select-book-dialog.js'
-
-export { activate, deactivate }
 
 const ImportMarkdownPlugin = () => {
   const [status, setStatus] = useState('')
@@ -51,7 +51,7 @@ const ImportMarkdownPlugin = () => {
               },
               { root: true }
             )
-            inkdrop.notifications.addSuccess('Import Markdown files', {
+            getEnv().notifications.addSuccess('Import Markdown files', {
               detail: `Successfully imported ${noteCount} Markdown files!`,
               dismissable: true
             })
@@ -66,7 +66,7 @@ const ImportMarkdownPlugin = () => {
   )
 
   useEffect(() => {
-    const sub = inkdrop.commands.add(document.body, {
+    const sub = getEnv().commands.add(document.body, {
       'import-markdown:import-from-file': showDialog
     })
     return () => sub.dispose()
@@ -86,12 +86,18 @@ const ImportMarkdownPlugin = () => {
   )
 }
 
-function activate() {
-  inkdrop.components.registerClass(ImportMarkdownPlugin)
-  inkdrop.layouts.addComponentToLayout('modal', 'ImportMarkdownPlugin')
+class InkdropPlugin implements IInkdropPlugin {
+  activate(env: Environment) {
+    setEnv(env)
+    env.components.registerClass(ImportMarkdownPlugin)
+    env.layouts.addComponentToLayout('modal', 'ImportMarkdownPlugin')
+  }
+
+  deactivate(env: Environment) {
+    env.layouts.removeComponentFromLayout('modal', 'ImportMarkdownPlugin')
+    env.components.deleteClass(ImportMarkdownPlugin)
+    setEnv(undefined)
+  }
 }
 
-function deactivate() {
-  inkdrop.layouts.removeComponentFromLayout('modal', 'ImportMarkdownPlugin')
-  inkdrop.components.deleteClass(ImportMarkdownPlugin)
-}
+export default new InkdropPlugin()

@@ -1,5 +1,7 @@
 import { maxAttachmentFileSize } from 'inkdrop-model'
 
+import { getEnv } from './env.js'
+
 type Props = {
   modal: { state: Record<string, any>; close: () => void }
   tooLargeFiles: string[]
@@ -15,7 +17,7 @@ const ImportMarkdownProgressDialog = ({
   importingFilePath,
   importError
 }: Props) => {
-  const AnyDialog = inkdrop.components.classes.Dialog as any
+  const AnyDialog = getEnv().components.classes.Dialog as any
 
   let content = (
     <AnyDialog.Content>

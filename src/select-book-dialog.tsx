@@ -1,11 +1,13 @@
+import { getEnv } from './env.js'
+
 type Props = {
   modal: { state: Record<string, any>; close: () => void }
   onSelect: (bookId: string | null) => void
 }
 
 const ImportMarkdownSelectNotebookDialog = ({ modal, onSelect }: Props) => {
-  const NotebookListBar = inkdrop.components.classes.NotebookListBar
-  const Dialog = inkdrop.components.classes.Dialog as any
+  const NotebookListBar = getEnv().components.classes.NotebookListBar
+  const Dialog = getEnv().components.classes.Dialog as any
 
   return (
     <Dialog

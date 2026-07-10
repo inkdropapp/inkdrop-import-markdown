@@ -6,6 +6,8 @@ import { glob } from 'glob'
 import { logger, models, importUtils } from 'inkdrop'
 import { maxAttachmentFileSize } from 'inkdrop-model'
 
+import { getEnv } from './env.js'
+
 const { Book } = models
 
 const isMacOS = process.platform === 'darwin'
@@ -23,7 +25,7 @@ export function openImportDialog({ isFolderOnly }: { isFolderOnly: boolean }) {
   }
 
   if (!isFolderOnly) properties.push('openFile')
-  return inkdrop.dialog.showOpenDialog({
+  return getEnv().dialog.showOpenDialog({
     title: 'Open Markdown file',
     properties,
     filters: [
