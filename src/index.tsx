@@ -1,69 +1,87 @@
 import path from 'path'
 
 import type { Environment, IInkdropPlugin } from '@inkdropapp/types'
-import { useModal } from 'inkdrop'
+import { useModal, logger } from 'inkdrop'
 import { useEffect, useCallback, useState } from 'react'
 
 import { getEnv, setEnv } from './env.js'
+import { ImportMarkdownWizardDialog } from './import-wizard-dialog.js'
+import type { WizardStep } from './import-wizard-dialog.js'
+import type { ImportPreview } from './importer.js'
 import {
   openImportDialog,
-  checkSizeOfFiles,
+  previewImport,
   importMarkdownFromMultipleFilesAndDirectories
 } from './importer.js'
-import ProgressDialog from './progress-dialog.js'
-import SelectNotebookDialog from './select-book-dialog.js'
+
+const EMPTY_PREVIEW: ImportPreview = {
+  directFileCount: 0,
+  notebooks: [],
+  mdFileCount: 0,
+  imageCount: 0,
+  imageSize: 0,
+  totalSize: 0,
+  oversizedFiles: []
+}
 
 const ImportMarkdownPlugin = () => {
+  const [step, setStep] = useState<WizardStep>('scanning')
+  const [filePaths, setFilePaths] = useState<string[]>([])
+  const [preview, setPreview] = useState<ImportPreview>(EMPTY_PREVIEW)
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null)
   const [status, setStatus] = useState('')
-  const [tooLargeFiles, setTooLargeFiles] = useState<string[]>([])
   const [processingFilePath, setProcessingFilePath] = useState('')
   const [importError, setImportError] = useState<Error | null>(null)
-  const selectNotebookDialog = useModal()
-  const progressDialog = useModal()
+  const wizardDialog = useModal()
 
-  const showDialog = useCallback(() => {
-    selectNotebookDialog.show()
-  }, [selectNotebookDialog])
+  const showDialog = useCallback(async () => {
+    const { filePaths: pickedPaths } = await openImportDialog({ isFolderOnly: false })
+    if (!(pickedPaths instanceof Array) || pickedPaths.length === 0) return
+    logger.debug('[import-markdown] Picked files and directories:', pickedPaths)
 
-  const handleNotebookSelected = useCallback(
-    async (destBookId: string | null) => {
-      const { filePaths } = await openImportDialog({
-        isFolderOnly: destBookId === null
+    setFilePaths(pickedPaths)
+    setSelectedBookId(null)
+    setImportError(null)
+    setStatus('Scanning files..')
+    setStep('scanning')
+    wizardDialog.show()
+
+    setPreview(await previewImport(pickedPaths))
+    setStep('stats')
+  }, [wizardDialog])
+
+  const handleNext = useCallback(() => {
+    setStep('notebook')
+  }, [])
+
+  const handleBack = useCallback(() => {
+    setStep('stats')
+  }, [])
+
+  const handleImport = useCallback(async () => {
+    setStep('progress')
+    setStatus('Importing files..')
+    try {
+      let noteCount = 0
+      await importMarkdownFromMultipleFilesAndDirectories(
+        filePaths,
+        selectedBookId,
+        (filePath, { isDirectory }) => {
+          setProcessingFilePath(filePath)
+          setStatus(`Importing file.. ${path.basename(filePath)}`)
+          if (!isDirectory) ++noteCount
+        },
+        { root: true }
+      )
+      getEnv().notifications.addSuccess('Import Markdown files', {
+        detail: `Successfully imported ${noteCount} Markdown files!`,
+        dismissable: true
       })
-      if (filePaths instanceof Array && filePaths.length > 0) {
-        setStatus('Scanning files..')
-        progressDialog.show()
-        const [, fileErrors] = checkSizeOfFiles(filePaths)
-        if (fileErrors.length > 0) {
-          setTooLargeFiles(fileErrors)
-        } else {
-          try {
-            selectNotebookDialog.close()
-            setStatus('Importing files..')
-            let noteCount = 0
-            await importMarkdownFromMultipleFilesAndDirectories(
-              filePaths,
-              destBookId,
-              (filePath, { isDirectory }) => {
-                setProcessingFilePath(filePath)
-                setStatus(`Importing file.. ${path.basename(filePath)}`)
-                if (!isDirectory) ++noteCount
-              },
-              { root: true }
-            )
-            getEnv().notifications.addSuccess('Import Markdown files', {
-              detail: `Successfully imported ${noteCount} Markdown files!`,
-              dismissable: true
-            })
-            progressDialog.close()
-          } catch (e) {
-            setImportError(e instanceof Error ? e : new Error(String(e)))
-          }
-        }
-      }
-    },
-    [progressDialog, selectNotebookDialog]
-  )
+      wizardDialog.close()
+    } catch (e) {
+      setImportError(e instanceof Error ? e : new Error(String(e)))
+    }
+  }, [filePaths, selectedBookId, wizardDialog])
 
   useEffect(() => {
     const sub = getEnv().commands.add(document.body, {
@@ -73,16 +91,19 @@ const ImportMarkdownPlugin = () => {
   }, [showDialog])
 
   return (
-    <>
-      <SelectNotebookDialog modal={selectNotebookDialog} onSelect={handleNotebookSelected} />
-      <ProgressDialog
-        modal={progressDialog}
-        status={status}
-        tooLargeFiles={tooLargeFiles}
-        importingFilePath={processingFilePath}
-        importError={importError}
-      />
-    </>
+    <ImportMarkdownWizardDialog
+      modal={wizardDialog}
+      step={step}
+      status={status}
+      preview={preview}
+      selectedBookId={selectedBookId}
+      importingFilePath={processingFilePath}
+      importError={importError}
+      onNext={handleNext}
+      onBack={handleBack}
+      onSelectNotebook={setSelectedBookId}
+      onImport={handleImport}
+    />
   )
 }
 

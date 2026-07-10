@@ -26,13 +26,15 @@ export const ImportWizardNotebookStep = ({
         </div>
         <NotebookListBar onItemSelect={onSelectNotebook} />
       </Dialog.Content>
-      <Dialog.Actions className="right aligned">
-        <button className="ui button" onClick={onBack}>
-          Back
-        </button>
-        <button className="ui button" onClick={onCancel}>
-          Cancel
-        </button>
+      <Dialog.Actions className="space-between">
+        <span>
+          <button className="ui button" onClick={onCancel}>
+            Cancel
+          </button>
+          <button className="ui button" onClick={onBack}>
+            Back
+          </button>
+        </span>
         <button className="ui primary button" disabled={!selectedBookId} onClick={onImport}>
           Import
         </button>

@@ -3,6 +3,7 @@ import { ImportWizardNotebookStep } from './import-wizard-notebook-step.js'
 import { ImportWizardProgressStep } from './import-wizard-progress-step.js'
 import { ImportWizardScanningStep } from './import-wizard-scanning-step.js'
 import { ImportWizardStatsStep } from './import-wizard-stats-step.js'
+import type { ImportPreview } from './importer.js'
 
 export type WizardStep = 'scanning' | 'stats' | 'notebook' | 'progress'
 
@@ -10,9 +11,7 @@ type Props = {
   modal: { state: Record<string, any>; close: () => void }
   step: WizardStep
   status: string
-  fileCount: number
-  totalSize: number
-  tooLargeFiles: string[]
+  preview: ImportPreview
   selectedBookId: string | null
   importingFilePath: string
   importError: Error | null
@@ -26,9 +25,7 @@ export const ImportMarkdownWizardDialog = ({
   modal,
   step,
   status,
-  fileCount,
-  totalSize,
-  tooLargeFiles,
+  preview,
   selectedBookId,
   importingFilePath,
   importError,
@@ -42,7 +39,7 @@ export const ImportMarkdownWizardDialog = ({
   return (
     <Dialog
       {...modal.state}
-      large={step === 'notebook'}
+      large
       onBackdropClick={modal.close}
       onEscKeyDown={modal.close}
       className={`import-markdown-wizard-dialog import-markdown-wizard-dialog--${step}`}
@@ -50,13 +47,7 @@ export const ImportMarkdownWizardDialog = ({
       <Dialog.Title>Import Notes from Markdown</Dialog.Title>
       {step === 'scanning' && <ImportWizardScanningStep status={status} onCancel={modal.close} />}
       {step === 'stats' && (
-        <ImportWizardStatsStep
-          fileCount={fileCount}
-          totalSize={totalSize}
-          tooLargeFiles={tooLargeFiles}
-          onCancel={modal.close}
-          onNext={onNext}
-        />
+        <ImportWizardStatsStep preview={preview} onCancel={modal.close} onNext={onNext} />
       )}
       {step === 'notebook' && (
         <ImportWizardNotebookStep
