@@ -1,7 +1,6 @@
-.ui.modal.dialog-frame.import-markdown-select-notebook-dialog {
-  min-width: 600px;
-  width: 50vw !important;
-  min-height: 50vh;
+.modal-container.import-markdown-select-notebook-dialog {
+  align-items: flex-start;
+  padding-top: 3em;
 
   .actions {
     text-align: left;

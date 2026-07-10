@@ -7,9 +7,11 @@
   "repository": "https://github.com/inkdropapp/inkdrop-import-markdown",
   "main": "./lib/index.js",
   "scripts": {
+    "dev": "tsc --watch",
     "lint": "oxlint",
     "build": "tsc",
     "format": "oxfmt",
+    "typecheck": "tsc --noEmit",
     "prepublishOnly": "pnpm run lint && pnpm run build"
   },
   "devDependencies": {

@@ -1,0 +1,22 @@
+.modal-container.import-markdown-wizard-dialog--notebook {
+  align-items: flex-start;
+  padding-top: 3em;
+}
+
+.ui.modal.dialog-frame.import-markdown-wizard-dialog {
+  .actions {
+    text-align: left;
+  }
+}
+
+.ui.modal.dialog-frame.import-markdown-wizard-dialog--scanning,
+.ui.modal.dialog-frame.import-markdown-wizard-dialog--progress {
+  text-align: center;
+  min-width: 360px;
+  max-width: 600px;
+
+  .content,
+  pre {
+    overflow: auto;
+  }
+}
