@@ -1,13 +1,15 @@
-import { useEffect, useCallback, useState } from 'react'
-import { useModal } from 'inkdrop'
-import SelectNotebookDialog from './select-book-dialog.js'
 import path from 'path'
-import ProgressDialog from './progress-dialog.js'
+
+import { useModal } from 'inkdrop'
+import { useEffect, useCallback, useState } from 'react'
+
 import {
   openImportDialog,
   checkSizeOfFiles,
   importMarkdownFromMultipleFilesAndDirectories
 } from './importer.js'
+import ProgressDialog from './progress-dialog.js'
+import SelectNotebookDialog from './select-book-dialog.js'
 
 export { activate, deactivate }
 
@@ -72,10 +74,7 @@ const ImportMarkdownPlugin = () => {
 
   return (
     <>
-      <SelectNotebookDialog
-        modal={selectNotebookDialog}
-        onSelect={handleNotebookSelected}
-      />
+      <SelectNotebookDialog modal={selectNotebookDialog} onSelect={handleNotebookSelected} />
       <ProgressDialog
         modal={progressDialog}
         status={status}

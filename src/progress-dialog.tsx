@@ -30,8 +30,8 @@ const ImportMarkdownProgressDialog = ({
           <div className="ui error message">
             <div className="header">The following files are too large:</div>
             <p>
-              Files larger than {maxAttachmentFileSize / 1024 / 1024} MB cannot
-              be imported. Please remove them to proceed.
+              Files larger than {maxAttachmentFileSize / 1024 / 1024} MB cannot be imported. Please
+              remove them to proceed.
             </p>
             <pre>
               {tooLargeFiles.map(e => (

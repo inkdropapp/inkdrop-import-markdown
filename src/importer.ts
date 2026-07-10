@@ -1,9 +1,10 @@
-import { logger, models, importUtils } from 'inkdrop'
 import fs from 'fs'
 import { promises as fsp } from 'fs'
 import path from 'path'
-import { maxAttachmentFileSize } from 'inkdrop-model'
+
 import { glob } from 'glob'
+import { logger, models, importUtils } from 'inkdrop'
+import { maxAttachmentFileSize } from 'inkdrop-model'
 
 const { Book } = models
 
@@ -51,10 +52,7 @@ export function checkSizeOfFiles(filePaths: string[]): [number, string[]] {
   return [total, errors]
 }
 
-type ProgressCallback = (
-  filePath: string,
-  info: { isDirectory: boolean }
-) => void
+type ProgressCallback = (filePath: string, info: { isDirectory: boolean }) => void
 
 export async function importMarkdownFromMultipleFilesAndDirectories(
   filePaths: string[],
@@ -82,21 +80,15 @@ export async function importMarkdownFromMultipleFilesAndDirectories(
         bookId = book._id
       }
       const files = glob.sync(path.join(fp, '*.md'))
-      await importMarkdownFromMultipleFilesAndDirectories(
-        files,
-        bookId,
-        progressCallback,
-        { root: false }
-      )
+      await importMarkdownFromMultipleFilesAndDirectories(files, bookId, progressCallback, {
+        root: false
+      })
 
       const dirs = (await getDirectories(fp)).map(name => path.join(fp, name))
       logger.debug('Subdirectories:', dirs)
-      await importMarkdownFromMultipleFilesAndDirectories(
-        dirs,
-        bookId,
-        progressCallback,
-        { root: false }
-      )
+      await importMarkdownFromMultipleFilesAndDirectories(dirs, bookId, progressCallback, {
+        root: false
+      })
     } else if (stats.isFile() && destBookId !== null) {
       await importMarkdownFromMultipleFiles([fp], destBookId)
     } else {
@@ -105,10 +97,7 @@ export async function importMarkdownFromMultipleFilesAndDirectories(
   }
 }
 
-export async function importMarkdownFromMultipleFiles(
-  files: string[],
-  destBookId: string
-) {
+export async function importMarkdownFromMultipleFiles(files: string[], destBookId: string) {
   for (let i = 0; i < files.length; ++i) {
     await importMarkdownFromFile(files[i], destBookId)
   }
