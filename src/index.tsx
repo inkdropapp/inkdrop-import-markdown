@@ -35,7 +35,7 @@ const ImportMarkdownPlugin = () => {
   const wizardDialog = useModal()
 
   const showDialog = useCallback(async () => {
-    const { filePaths: pickedPaths } = await openImportDialog({ isFolderOnly: false })
+    const { filePaths: pickedPaths } = await openImportDialog()
     if (!(pickedPaths instanceof Array) || pickedPaths.length === 0) return
     logger.debug('[import-markdown] Picked files and directories:', pickedPaths)
 

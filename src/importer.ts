@@ -17,14 +17,10 @@ const getDirectories = async (source: string) =>
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name)
 
-export function openImportDialog({ isFolderOnly }: { isFolderOnly: boolean }) {
-  let properties: string[] = ['openDirectory', 'multiSelections']
-  if (!isFolderOnly) {
-    if (isMacOS) properties.push('openFile')
-    else properties = ['openFile', 'multiSelections']
-  }
-
-  if (!isFolderOnly) properties.push('openFile')
+export function openImportDialog() {
+  const properties = isMacOS
+    ? ['openFile', 'openDirectory', 'multiSelections']
+    : ['openFile', 'multiSelections']
   return getEnv().dialog.showOpenDialog({
     title: 'Open Markdown file',
     properties,
@@ -219,7 +215,7 @@ export async function importMarkdownFromMultipleFilesAndDirectories(
         await book.save()
         bookId = book._id
       }
-      const files = glob.sync(path.join(fp, '*.md'))
+      const files = await glob(path.join(fp, '*.md'))
       await importMarkdownFromMultipleFilesAndDirectories(files, bookId, progressCallback, {
         root: false
       })
