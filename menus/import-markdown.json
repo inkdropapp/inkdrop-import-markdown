@@ -9,6 +9,10 @@
             {
               "label": "from Markdown files..",
               "command": "import-markdown:import-from-file"
+            },
+            {
+              "label": "from Markdown folders..",
+              "command": "import-markdown:import-from-directory"
             }
           ]
         }

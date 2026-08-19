@@ -17,6 +17,13 @@ const getDirectories = async (source: string) =>
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name)
 
+/**
+ * Opens the picker for files to import.
+ *
+ * Only macOS can offer files and folders in a single dialog: on Windows and Linux Electron
+ * shows a directory-only selector when `openFile` and `openDirectory` are combined, so those
+ * platforms get a files-only dialog here and reach folders through `openImportFolderDialog`.
+ */
 export function openImportDialog() {
   const properties = isMacOS
     ? ['openFile', 'openDirectory', 'multiSelections']
@@ -28,6 +35,20 @@ export function openImportDialog() {
       { name: 'Markdown Files', extensions: ['md', 'txt'] },
       { name: 'All Files', extensions: ['*'] }
     ]
+  })
+}
+
+/**
+ * Opens the picker for folders to import, so Windows and Linux users can bring in a folder
+ * tree — their file dialog cannot select folders at all (see `openImportDialog`).
+ *
+ * No `filters` here: they only apply to files, and a folder dialog showing a file-type
+ * dropdown reads as if folders were the wrong choice.
+ */
+export function openImportFolderDialog() {
+  return getEnv().dialog.showOpenDialog({
+    title: 'Open Markdown folder',
+    properties: ['openDirectory', 'multiSelections']
   })
 }
 

@@ -10,6 +10,7 @@ import type { WizardStep } from './import-wizard-dialog.js'
 import type { ImportPreview } from './importer.js'
 import {
   openImportDialog,
+  openImportFolderDialog,
   previewImport,
   importMarkdownFromMultipleFilesAndDirectories
 } from './importer.js'
@@ -34,21 +35,27 @@ const ImportMarkdownPlugin = () => {
   const [importError, setImportError] = useState<Error | null>(null)
   const wizardDialog = useModal()
 
-  const showDialog = useCallback(async () => {
-    const { filePaths: pickedPaths } = await openImportDialog()
-    if (!(pickedPaths instanceof Array) || pickedPaths.length === 0) return
-    logger.debug('[import-markdown] Picked files and directories:', pickedPaths)
+  const startWizard = useCallback(
+    async (openDialog: typeof openImportDialog) => {
+      const { filePaths: pickedPaths } = await openDialog()
+      if (!(pickedPaths instanceof Array) || pickedPaths.length === 0) return
+      logger.debug('[import-markdown] Picked files and directories:', pickedPaths)
 
-    setFilePaths(pickedPaths)
-    setSelectedBookId(null)
-    setImportError(null)
-    setStatus('Scanning files..')
-    setStep('scanning')
-    wizardDialog.show()
+      setFilePaths(pickedPaths)
+      setSelectedBookId(null)
+      setImportError(null)
+      setStatus('Scanning files..')
+      setStep('scanning')
+      wizardDialog.show()
 
-    setPreview(await previewImport(pickedPaths))
-    setStep('stats')
-  }, [wizardDialog])
+      setPreview(await previewImport(pickedPaths))
+      setStep('stats')
+    },
+    [wizardDialog]
+  )
+
+  const showFileDialog = useCallback(() => startWizard(openImportDialog), [startWizard])
+  const showFolderDialog = useCallback(() => startWizard(openImportFolderDialog), [startWizard])
 
   const handleNext = useCallback(() => {
     setStep('notebook')
@@ -85,10 +92,11 @@ const ImportMarkdownPlugin = () => {
 
   useEffect(() => {
     const sub = getEnv().commands.add(document.body, {
-      'import-markdown:import-from-file': showDialog
+      'import-markdown:import-from-file': showFileDialog,
+      'import-markdown:import-from-directory': showFolderDialog
     })
     return () => sub.dispose()
-  }, [showDialog])
+  }, [showFileDialog, showFolderDialog])
 
   return (
     <ImportMarkdownWizardDialog
