@@ -18,7 +18,6 @@
     "@inkdropapp/types": "^0.0.9",
     "@types/node": "^26.1.1",
     "@types/react": "^19.2.17",
-    "glob": "^13.0.6",
     "inkdrop-model": "^2.11.6",
     "oxfmt": "0.58.0",
     "oxlint": "1.73.0",

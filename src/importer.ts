@@ -1,8 +1,7 @@
 import fs from 'fs'
-import { promises as fsp } from 'fs'
+import { promises as fsp, type Dirent } from 'fs'
 import path from 'path'
 
-import { glob } from 'glob'
 import { logger, models, importUtils } from 'inkdrop'
 import { maxAttachmentFileSize } from 'inkdrop-model'
 
@@ -11,11 +10,6 @@ import { getEnv } from './env.js'
 const { Book } = models
 
 const isMacOS = process.platform === 'darwin'
-
-const getDirectories = async (source: string) =>
-  (await fsp.readdir(source, { withFileTypes: true }))
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => dirent.name)
 
 /**
  * Opens the picker for files to import.
@@ -59,6 +53,26 @@ function classifyFile(filePath: string): 'md' | 'image' | null {
   if (ext === '.md') return 'md'
   if (IMAGE_EXTENSIONS.has(ext)) return 'image'
   return null
+}
+
+/**
+ * Lists a directory's direct markdown files and its subdirectories, as absolute paths, in a
+ * single pass.
+ *
+ * Deliberately not `glob`: a glob pattern has to be written with `/` and treats `\` as an escape
+ * character, so `path.join(dir, '*.md')` matches nothing at all on Windows, and any directory
+ * whose name contains glob magic (`[`, `{`, `(`, `!`) fails the same way on every platform.
+ */
+async function readMarkdownFilesAndSubdirectories(dirPath: string) {
+  const entries = await fsp.readdir(dirPath, { withFileTypes: true })
+  const toPath = (entry: Dirent) => path.join(dirPath, entry.name)
+
+  return {
+    markdownFiles: entries
+      .filter(entry => entry.isFile() && classifyFile(entry.name) === 'md')
+      .map(toPath),
+    subdirectories: entries.filter(entry => entry.isDirectory()).map(toPath)
+  }
 }
 
 export type NotebookImportPreviewNode = {
@@ -236,16 +250,20 @@ export async function importMarkdownFromMultipleFilesAndDirectories(
         await book.save()
         bookId = book._id
       }
-      const files = await glob(path.join(fp, '*.md'))
-      await importMarkdownFromMultipleFilesAndDirectories(files, bookId, progressCallback, {
+      const { markdownFiles, subdirectories } = await readMarkdownFilesAndSubdirectories(fp)
+      await importMarkdownFromMultipleFilesAndDirectories(markdownFiles, bookId, progressCallback, {
         root: false
       })
 
-      const dirs = (await getDirectories(fp)).map(name => path.join(fp, name))
-      logger.debug('Subdirectories:', dirs)
-      await importMarkdownFromMultipleFilesAndDirectories(dirs, bookId, progressCallback, {
-        root: false
-      })
+      logger.debug('Subdirectories:', subdirectories)
+      await importMarkdownFromMultipleFilesAndDirectories(
+        subdirectories,
+        bookId,
+        progressCallback,
+        {
+          root: false
+        }
+      )
     } else if (stats.isFile() && destBookId !== null) {
       await importMarkdownFromMultipleFiles([fp], destBookId)
     } else {
