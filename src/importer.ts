@@ -236,7 +236,7 @@ export async function importMarkdownFromMultipleFilesAndDirectories(
   for (const fp of filePaths) {
     const stats = fs.statSync(fp)
     const isDirectory = stats.isDirectory()
-    if (!root) progressCallback(fp, { isDirectory })
+    if (!root || !isDirectory) progressCallback(fp, { isDirectory })
 
     if (isDirectory) {
       const folderName = path.basename(fp)
