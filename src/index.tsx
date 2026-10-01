@@ -1,6 +1,6 @@
 import path from 'path'
 
-import type { Environment, IInkdropPlugin } from '@inkdropapp/types'
+import type { CommandEvent, Environment, IInkdropPlugin } from '@inkdropapp/types'
 import { useModal, logger } from 'inkdrop'
 import { useEffect, useCallback, useState } from 'react'
 
@@ -25,24 +25,36 @@ const EMPTY_PREVIEW: ImportPreview = {
   oversizedFiles: []
 }
 
+/**
+ * The notebook a sidebar context-menu command targets: an explicit `detail.bookId` when
+ * dispatched programmatically, else the last notebook that was right-clicked — the store never
+ * clears it, so a programmatic dispatch should pass `bookId`. `null` (no notebook right-clicked
+ * yet) falls back to the regular wizard, which asks for a destination.
+ */
+function getContextMenuBookId(e: CommandEvent): string | null {
+  return e.detail?.bookId ?? getEnv().store.getState().bookList.bookForContextMenu?._id ?? null
+}
+
 const ImportMarkdownPlugin = () => {
   const [step, setStep] = useState<WizardStep>('scanning')
   const [filePaths, setFilePaths] = useState<string[]>([])
   const [preview, setPreview] = useState<ImportPreview>(EMPTY_PREVIEW)
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null)
+  const [isDestinationPreset, setIsDestinationPreset] = useState(false)
   const [status, setStatus] = useState('')
   const [processingFilePath, setProcessingFilePath] = useState('')
   const [importError, setImportError] = useState<Error | null>(null)
   const wizardDialog = useModal()
 
   const startWizard = useCallback(
-    async (openDialog: typeof openImportDialog) => {
+    async (openDialog: typeof openImportDialog, destBookId: string | null = null) => {
       const { filePaths: pickedPaths } = await openDialog()
       if (!(pickedPaths instanceof Array) || pickedPaths.length === 0) return
       logger.debug('[import-markdown] Picked files and directories:', pickedPaths)
 
       setFilePaths(pickedPaths)
-      setSelectedBookId(null)
+      setSelectedBookId(destBookId)
+      setIsDestinationPreset(destBookId !== null)
       setImportError(null)
       setStatus('Scanning files..')
       setStep('scanning')
@@ -56,10 +68,14 @@ const ImportMarkdownPlugin = () => {
 
   const showFileDialog = useCallback(() => startWizard(openImportDialog), [startWizard])
   const showFolderDialog = useCallback(() => startWizard(openImportFolderDialog), [startWizard])
-
-  const handleNext = useCallback(() => {
-    setStep('notebook')
-  }, [])
+  const showFileDialogForNotebook = useCallback(
+    (e: CommandEvent) => startWizard(openImportDialog, getContextMenuBookId(e)),
+    [startWizard]
+  )
+  const showFolderDialogForNotebook = useCallback(
+    (e: CommandEvent) => startWizard(openImportFolderDialog, getContextMenuBookId(e)),
+    [startWizard]
+  )
 
   const handleBack = useCallback(() => {
     setStep('stats')
@@ -90,13 +106,34 @@ const ImportMarkdownPlugin = () => {
     }
   }, [filePaths, selectedBookId, wizardDialog])
 
+  const handleNext = useCallback(() => {
+    if (isDestinationPreset) handleImport()
+    else setStep('notebook')
+  }, [isDestinationPreset, handleImport])
+
   useEffect(() => {
     const sub = getEnv().commands.add(document.body, {
-      'import-markdown:import-from-file': showFileDialog,
-      'import-markdown:import-from-directory': showFolderDialog
+      'import-markdown:import-from-file': {
+        description: 'Import notes from Markdown files',
+        didDispatch: showFileDialog
+      },
+      'import-markdown:import-from-directory': {
+        description: 'Import notes from Markdown folders',
+        didDispatch: showFolderDialog
+      },
+      'import-markdown:import-from-file-into-notebook': {
+        description: 'Import notes from Markdown files into the selected notebook',
+        hiddenInCommandPalette: true,
+        didDispatch: showFileDialogForNotebook
+      },
+      'import-markdown:import-from-directory-into-notebook': {
+        description: 'Import notes from Markdown folders into the selected notebook',
+        hiddenInCommandPalette: true,
+        didDispatch: showFolderDialogForNotebook
+      }
     })
     return () => sub.dispose()
-  }, [showFileDialog, showFolderDialog])
+  }, [showFileDialog, showFolderDialog, showFileDialogForNotebook, showFolderDialogForNotebook])
 
   return (
     <ImportMarkdownWizardDialog
@@ -104,6 +141,7 @@ const ImportMarkdownPlugin = () => {
       step={step}
       status={status}
       preview={preview}
+      isDestinationPreset={isDestinationPreset}
       selectedBookId={selectedBookId}
       importingFilePath={processingFilePath}
       importError={importError}

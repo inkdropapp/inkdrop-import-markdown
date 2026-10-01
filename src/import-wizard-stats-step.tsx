@@ -5,6 +5,7 @@ import type { ImportPreview, NotebookImportPreviewNode } from './importer.js'
 
 type Props = {
   preview: ImportPreview
+  nextLabel: string
   onCancel: () => void
   onNext: () => void
 }
@@ -39,7 +40,7 @@ const NotebookPreviewItem = ({ node }: { node: NotebookImportPreviewNode }) => {
   )
 }
 
-export const ImportWizardStatsStep = ({ preview, onCancel, onNext }: Props) => {
+export const ImportWizardStatsStep = ({ preview, nextLabel, onCancel, onNext }: Props) => {
   const Dialog = getEnv().components.classes.Dialog as any
   const StreamlineIcon = getEnv().components.classes.StreamlineIcon as any
 
@@ -103,7 +104,7 @@ export const ImportWizardStatsStep = ({ preview, onCancel, onNext }: Props) => {
           Cancel
         </button>
         <button className="ui primary button" onClick={onNext}>
-          Next
+          {nextLabel}
         </button>
       </Dialog.Actions>
     </>

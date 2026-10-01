@@ -18,5 +18,22 @@
         }
       ]
     }
-  ]
+  ],
+  "context-menu": {
+    ".sidebar-menu .sidebar-menu-book-list-item, .sidebar-workspace-menu .sidebar-menu-book-list-item": [
+      {
+        "label": "Import",
+        "submenu": [
+          {
+            "label": "from Markdown files..",
+            "command": "import-markdown:import-from-file-into-notebook"
+          },
+          {
+            "label": "from Markdown folders..",
+            "command": "import-markdown:import-from-directory-into-notebook"
+          }
+        ]
+      }
+    ]
+  }
 }

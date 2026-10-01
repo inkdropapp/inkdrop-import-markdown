@@ -12,6 +12,7 @@ type Props = {
   step: WizardStep
   status: string
   preview: ImportPreview
+  isDestinationPreset: boolean
   selectedBookId: string | null
   importingFilePath: string
   importError: Error | null
@@ -26,6 +27,7 @@ export const ImportMarkdownWizardDialog = ({
   step,
   status,
   preview,
+  isDestinationPreset,
   selectedBookId,
   importingFilePath,
   importError,
@@ -47,7 +49,12 @@ export const ImportMarkdownWizardDialog = ({
       <Dialog.Title>Import Notes from Markdown</Dialog.Title>
       {step === 'scanning' && <ImportWizardScanningStep status={status} onCancel={modal.close} />}
       {step === 'stats' && (
-        <ImportWizardStatsStep preview={preview} onCancel={modal.close} onNext={onNext} />
+        <ImportWizardStatsStep
+          preview={preview}
+          nextLabel={isDestinationPreset ? 'Import' : 'Next'}
+          onCancel={modal.close}
+          onNext={onNext}
+        />
       )}
       {step === 'notebook' && (
         <ImportWizardNotebookStep
