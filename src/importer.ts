@@ -75,8 +75,25 @@ async function readMarkdownFilesAndSubdirectories(dirPath: string) {
   }
 }
 
+/**
+ * Whether a directory holds any markdown file at any depth. A directory without one does not
+ * become a notebook: e.g. Notion exports a page's images into a sibling folder named after the
+ * page, which would otherwise import as an empty notebook. Its images aren't lost — they are
+ * imported through the markdown files that reference them.
+ */
+async function containsMarkdownFiles(dirPath: string): Promise<boolean> {
+  const { markdownFiles, subdirectories } = await readMarkdownFilesAndSubdirectories(dirPath)
+  if (markdownFiles.length > 0) return true
+  for (const subdirectory of subdirectories) {
+    if (await containsMarkdownFiles(subdirectory)) return true
+  }
+  return false
+}
+
 export type NotebookImportPreviewNode = {
   name: string
+  /** False for a folder without markdown files at any depth: skipped (`containsMarkdownFiles`) */
+  isNotebook: boolean
   fileCount: number
   imageCount: number
   imageSize: number
@@ -153,6 +170,7 @@ async function scanDirectory(
   return {
     node: {
       name: path.basename(dirPath),
+      isNotebook: totals.mdFileCount > 0,
       fileCount: directTotals.mdFileCount,
       imageCount: directTotals.imageCount,
       imageSize: directTotals.imageSize,
@@ -169,7 +187,9 @@ async function scanDirectory(
  * Mirrors that function's `shouldCreateNotebook` branching exactly: a single top-level folder
  * pick does not become its own notebook (its direct files + subfolders land under the
  * destination notebook), while every other folder — nested, or part of a multi-item pick —
- * becomes its own notebook. Keep this in sync if that branching changes.
+ * becomes its own notebook — unless it holds no markdown file at any depth (see
+ * `containsMarkdownFiles`), in which case it is skipped. Keep this in sync if that branching
+ * changes.
  */
 export async function previewImport(filePaths: string[]): Promise<ImportPreview> {
   const notebooks: NotebookImportPreviewNode[] = []
@@ -238,7 +258,9 @@ export async function importMarkdownFromMultipleFilesAndDirectories(
     const isDirectory = stats.isDirectory()
     if (!root || !isDirectory) progressCallback(fp, { isDirectory })
 
-    if (isDirectory) {
+    if (isDirectory && !(await containsMarkdownFiles(fp))) {
+      logger.debug('Skipping a directory without markdown files:', fp)
+    } else if (isDirectory) {
       const folderName = path.basename(fp)
       const shouldCreateNotebook = !root || filePaths.length > 1
       let bookId = destBookId

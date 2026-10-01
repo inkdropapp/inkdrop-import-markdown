@@ -20,12 +20,19 @@ const NotebookPreviewItem = ({ node }: { node: NotebookImportPreviewNode }) => {
 
   return (
     <li>
-      <StreamlineIcon name="book-close-2" className="notebook-icon inline" /> {node.name}
+      {node.isNotebook ? (
+        <StreamlineIcon name="book-close-2" className="notebook-icon inline" />
+      ) : (
+        <StreamlineIcon name="folder-empty" className="inline" />
+      )}{' '}
+      {node.name}
       <ul>
-        <li>
-          <StreamlineIcon name="common-file-text" className="inline" /> {node.fileCount}&nbsp;
-          {node.fileCount === 1 ? 'file' : 'files'}
-        </li>
+        {node.isNotebook && (
+          <li>
+            <StreamlineIcon name="common-file-text" className="inline" /> {node.fileCount}&nbsp;
+            {node.fileCount === 1 ? 'file' : 'files'}
+          </li>
+        )}
         {node.imageCount > 0 && (
           <li>
             <StreamlineIcon name="picture-sun" className="inline" /> {node.imageCount}&nbsp;
