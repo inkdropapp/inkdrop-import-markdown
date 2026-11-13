@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This repository has moved to [inkdropapp/plugins](https://github.com/inkdropapp/plugins): [`packages/import-markdown`](https://github.com/inkdropapp/plugins/tree/main/packages/import-markdown). It is archived and read-only; please open issues and pull requests there.
+
 # Import Markdown plugin
 
 This is a built-in plugin for Inkdrop.
